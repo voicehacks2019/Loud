@@ -1,0 +1,506 @@
+[
+    {
+        "id": "1c46a3a1.fb80f4",
+        "type": "tab",
+        "label": "VB_level3",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "ff306580.6e4228",
+        "type": "console",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1190,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "60202338.8b3ef4",
+        "type": "algoliasearch",
+        "z": "1c46a3a1.fb80f4",
+        "API_ID": "D9PF8871WM",
+        "API_Key": "a46f182ce5289286acd355344ef6e257",
+        "Index": "vblevel2",
+        "name": "Search",
+        "x": 1020,
+        "y": 200,
+        "wires": [
+            [
+                "ff306580.6e4228",
+                "92a9b59c.6b4b48"
+            ]
+        ]
+    },
+    {
+        "id": "d36406d3.3b3ad8",
+        "type": "http response",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1190,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "9bd6494e.1648a",
+        "type": "http in",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "url": "/vb_level2",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 400,
+        "wires": [
+            [
+                "e419f954.9938"
+            ]
+        ]
+    },
+    {
+        "id": "25785c28.0c7b8c",
+        "type": "console",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 450,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "e419f954.9938",
+        "type": "change",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "query",
+                "pt": "msg",
+                "to": "payload.query",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 400,
+        "wires": [
+            [
+                "25785c28.0c7b8c",
+                "1f2fbc49.18eb2c"
+            ]
+        ]
+    },
+    {
+        "id": "92a9b59c.6b4b48",
+        "type": "function",
+        "z": "1c46a3a1.fb80f4",
+        "name": "Default Answer",
+        "func": "var require = context.global.get('require');\n//node.warn(msg);\nvar i = 0;\n//var response;\nvar response = [];\nvar possible_matches = msg.payload.hits;\n//node.warn(possible_matches);\n//i need to go through all the json objects and make a new object and put it in the array\nvar count = possible_matches.length;\n//node.warn(count);\nif(count >= 1){\n    for(var i =0; i < count; i++){\n        var regex = /<em>/gm;\n        var regex2 = /<\\/em>/gm;\n        var message = msg.payload.hits[i]._highlightResult.ANSWER.value;\n        //node.warn(message);\n        var question = msg.payload.hits[i]._highlightResult.QUESTION.value;\n        //node.warn(question);\n        message = message.replace(regex, \"\");\n        message = message.replace(regex2, \"\");\n        question = question.replace(regex, \"\");\n        question = question.replace(regex2, \"\");\n\n        match = {\n            \"intent\":\"nothing\", \n            \"message\":message,\n            \"question\":question\n        };\n        //node.warn(match);\n        response.push(match);\n        \n    }\n//     response={\n//     \"message\": \"At this time Jockey.com and Jockey Stores do not sell gift cards. \",\n//     \"question\": \"Can I purchase gift cards on Jockey.com or In a Jockey outlet Store?\"\n// };\n    //msg.payload = JSON.stringify(response);\n    response = {response};\n    //node.warn(response);\n    msg.payload = response;\n    //node.warn(msg.payload);\n}\nelse{\n    match = {\"message\":\"Sorry, I don't understand your question, but since it is a medical condition, let me get some help!\"};\n    response.push(match);\n    msg.payload = {response};\n}\n\nif (msg.query===\"\"){\n    //node.warn(\"String is empty\");\n    msg.payload = null;\n}\n// check_key=context.global.get('key');\n// node.warn(\"Before releasing key value \" +check_key);\n// context.global.set('key',true);\n// check_key=context.global.get('key');\n// node.warn(\"After releasing key value \" +check_key);\n\n// node.warn(msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 980,
+        "y": 300,
+        "wires": [
+            [
+                "d36406d3.3b3ad8",
+                "2dc41e07.a2c3da"
+            ]
+        ]
+    },
+    {
+        "id": "eac12a1b.916d68",
+        "type": "function",
+        "z": "1c46a3a1.fb80f4",
+        "name": "End",
+        "func": "var require = context.global.get('require'); \n// node.warn(msg);\n// msg.input_file='/interplay_v2/public/private/FAQ.csv';\n// var check_initialize = context.global.get(\"pythonspacyinit\");\n// if(check_initialize === undefined)\n// {   \n//     msg.doInit = 1;\n// }\n// else\n//     msg.doInit = 0;\n\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 150,
+        "y": 340,
+        "wires": [
+            [
+                "b704fce5.96e818",
+                "68361375.395d04"
+            ]
+        ]
+    },
+    {
+        "id": "b704fce5.96e818",
+        "type": "console",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 370,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "ed8d035f.75b68",
+        "type": "function",
+        "z": "1c46a3a1.fb80f4",
+        "name": "payload modification",
+        "func": "var require = context.global.get('require'); \n// node.warn(msg);\n// var check_initialize = context.global.get(\"pythonspacyinit\");\n// if(check_initialize === undefined)\n// {\n//     context.global.set('pythonspacyinit',1);\n// }\n// msg.topic=JSON.parse(msg.payload)\n// msg.topic=\"Can I purchase gift cards on Jockey.com or In a Jockey outlet Store?\";\nmsg.topic=msg.algolia_query;\n// node.warn(\"this is the topic \"+msg.topic)\n// node.warn(msg);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 720,
+        "y": 200,
+        "wires": [
+            [
+                "60202338.8b3ef4"
+            ]
+        ]
+    },
+    {
+        "id": "b9f07889.00eda",
+        "type": "delay",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 660,
+        "y": 500,
+        "wires": [
+            [
+                "1f2fbc49.18eb2c"
+            ]
+        ]
+    },
+    {
+        "id": "40975b72.4a7574",
+        "type": "comment",
+        "z": "1c46a3a1.fb80f4",
+        "name": "--------Delay for First Request---------",
+        "info": "Create a 5 second delay for the first request to come in",
+        "x": 630,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "6939b34b.a400ac",
+        "type": "comment",
+        "z": "1c46a3a1.fb80f4",
+        "name": "------------- NLP----------------",
+        "info": "",
+        "x": 440,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "e64b9e22.3bca4",
+        "type": "comment",
+        "z": "1c46a3a1.fb80f4",
+        "name": "------------Checking for Algolia Output-------------",
+        "info": "",
+        "x": 1060,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "d574f76f.fecfe8",
+        "type": "comment",
+        "z": "1c46a3a1.fb80f4",
+        "name": "--------Get Http Request-----------",
+        "info": "",
+        "x": 200,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "853c9a44.152da",
+        "type": "console",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 570,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "68361375.395d04",
+        "type": "function",
+        "z": "1c46a3a1.fb80f4",
+        "name": "Set's ID",
+        "func": "var require = context.global.get('require'); \nmsg.id=Math.random()*100;\nvar response=msg.res;\n// node.warn(\"Setting response ID to this \");\n// node.warn(\"res \"+msg.id);\ncontext.global.set(\"res\"+msg.id,response);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 160,
+        "y": 200,
+        "wires": [
+            [
+                "681b4e6a.0f22b"
+            ]
+        ]
+    },
+    {
+        "id": "8a0ab840.36ed9",
+        "type": "function",
+        "z": "1c46a3a1.fb80f4",
+        "name": "Gets ID",
+        "func": "var require = context.global.get('require'); \n\nvar response=context.global.get(\"res\"+msg.id);\n// node.warn(\"Getting ID from someone \");\n// node.warn(\"res \"+msg.id);\nmsg.res=response;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 480,
+        "y": 260,
+        "wires": [
+            [
+                "ed8d035f.75b68",
+                "853c9a44.152da"
+            ]
+        ]
+    },
+    {
+        "id": "681b4e6a.0f22b",
+        "type": "FAQ",
+        "z": "1c46a3a1.fb80f4",
+        "name": "Bra_support_FAQ",
+        "i_filename": "/interplay_v2/public/private/voicehacks_level2.csv",
+        "tuning_paramter1": ".5",
+        "tuning_paramter2": "0.45",
+        "tuning_paramter3": "0.49",
+        "func": "\nreturn msg",
+        "outputs": 1,
+        "x": 350,
+        "y": 200,
+        "wires": [
+            [
+                "8a0ab840.36ed9"
+            ]
+        ]
+    },
+    {
+        "id": "fefe2646.32c63",
+        "type": "console",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1450,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "d389c50f.bbcc08",
+        "type": "function",
+        "z": "1c46a3a1.fb80f4",
+        "name": "modiefier for DB",
+        "func": "var require = context.global.get('require'); \nvar qs;\nnode.warn(msg.payload.topic);\nif (/*(msg.payload.hits.length >0) && */(msg.req.query.write)){\n    // qs=msg.payload.hits[0]._highlightResult.QUESTION.value;\n    qs=msg.req.query.ques;\n}\nelse {\n    return [null,msg];\n}\nnode.warn(\"At line 10\"+msg.req.query.write);\nmsg.user_query=msg.req.query.query;\nmsg.query_shown=qs;\n\nnode.warn(\"USER QUERY \"+msg.user_query);\nnode.warn(\"QUERY SHOWN \"+msg.query_shown);\nvar db_obj={\n    'user_query':msg.user_query,\n    'query_shown':qs\n    };\n    \nmsg.obj=db_obj;\nreturn [msg,null];\n",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 1340,
+        "y": 160,
+        "wires": [
+            [
+                "5b184e36.32589",
+                "a1b3f5e3.85ca6"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "5b184e36.32589",
+        "type": "console",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1650,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "1f2fbc49.18eb2c",
+        "type": "function",
+        "z": "1c46a3a1.fb80f4",
+        "name": "Monitor Input/Output",
+        "func": "var require = context.global.get('require'); \n// var check_initialize = context.global.get(\"pythonspacyinit\");\nvar check_initialize = global.get(\"pythonspacyinit\");\n\nif(check_initialize === undefined)\n{\n    return [null,msg,null,null];\n}\n\ntry {\n    msg.query=decodeURI(msg.query);\n    // expected output: \"https://mozilla.org/?x=шеллы\"\n    var numberPattern = /\\d+/g;\n    var num = msg.query.match( numberPattern );\n    //node.warn(num);\n    node.warn(num.length);\n    if(num.length>1){\n        for(var i = 0;i <num.length;i++){\n            if(num[i] >= 46){\n                return [null,null,null,msg];\n            }\n        }\n    }\n    else if(num.length == 1){\n        if(num[0] >= 46){\n            return [null,null,null,msg];\n        }\n    }\n} catch(e) { // catches a malformed URI\n  node.warn(e);\n}\n\nmsg.query=msg.query.trim();\nnode.warn(\"this is the msg.query\");\nnode.warn(msg.query);\nif(msg.query===\"\"){\n    msg.payload={};\n    return[null,null,msg,null];\n}\n\nreturn [msg,null,null,null];",
+        "outputs": 4,
+        "noerr": 0,
+        "x": 680,
+        "y": 400,
+        "wires": [
+            [
+                "eac12a1b.916d68"
+            ],
+            [
+                "b9f07889.00eda"
+            ],
+            [
+                "3add3180.b87eee"
+            ],
+            [
+                "cd3e8e5a.bcbc3",
+                "3df08646.10b8c2"
+            ]
+        ]
+    },
+    {
+        "id": "a1b3f5e3.85ca6",
+        "type": "function",
+        "z": "1c46a3a1.fb80f4",
+        "name": "MariaDB",
+        "func": "var require = context.global.get('require'); \n\nvar mysql = require('mysql');\n\nvar con = mysql.createConnection({\n  host: \"localhost\",\n  user: \"root\",\n  password: \"jockey1234\",\n  database: \"bra_support\"\n});\n\n\n\n// con.end(function(err) {\n//   if (err) {\n//     return console.log('error:' + err.message);\n//   }\n//   console.log('Close the database connection.');\n// });\nqs=msg.req.query.ques;\nmsg.user_query=msg.req.query.query;\nmsg.query_shown=qs;\n\nvar regex = /<em>/gm;\nvar regex2 = /<\\/em>/gm;\n\n// var question = msg.query_shown.replace(regex, \"\");\n// var question2 = question.replace(regex2, \"\");\nnode.warn(\"Query shown \"+msg.query_shown);\nnode.warn(\"user query asked  \"+msg.user_query);\n\ncon.connect(function(err) {\n  if (err) throw err;\n  console.log(\"Connected!\");\n//   var sql = \"INSERT INTO questions (user_query, query_shown) VALUES ('how can i test this?', 'testing this query')\";\n  var sql = \"INSERT INTO questions (user_query, query_shown) VALUES (\"+mysql.escape(msg.obj.user_query)+\",\"+mysql.escape(msg.obj.query_shown)+\")\";\n  con.query(sql, function (err, result) {\n    if (err) throw err;\n    console.log(\"1 record inserted\");\n  });\n});\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1380,
+        "y": 300,
+        "wires": [
+            [
+                "fefe2646.32c63"
+            ]
+        ]
+    },
+    {
+        "id": "abcdc4c9.ed3c78",
+        "type": "catch",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "scope": null,
+        "x": 980,
+        "y": 540,
+        "wires": [
+            [
+                "b679e5bb.c61a68"
+            ]
+        ]
+    },
+    {
+        "id": "b679e5bb.c61a68",
+        "type": "console",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1190,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "c1080eb.5e0b87",
+        "type": "comment",
+        "z": "1c46a3a1.fb80f4",
+        "name": "--------Error log---------",
+        "info": "catch the error",
+        "x": 1080,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "3add3180.b87eee",
+        "type": "http response",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 890,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "cd3e8e5a.bcbc3",
+        "type": "console",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 870,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "c8d3e594.9da818",
+        "type": "http response",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1110,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "3df08646.10b8c2",
+        "type": "function",
+        "z": "1c46a3a1.fb80f4",
+        "name": "Default Answer",
+        "func": "var require = context.global.get('require');\n//node.warn(msg);\nvar response = [];\nmatch = {\"message\":\"Based on our current assortment, I don't think our Jockey Forever Fit Bras would meet your fit expectations.\"};\nresponse.push(match);\nmsg.payload = {response};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 900,
+        "y": 440,
+        "wires": [
+            [
+                "c8d3e594.9da818",
+                "2dc41e07.a2c3da"
+            ]
+        ]
+    },
+    {
+        "id": "2dc41e07.a2c3da",
+        "type": "console",
+        "z": "1c46a3a1.fb80f4",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1150,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "3471e04.547c2a",
+        "type": "comment",
+        "z": "1c46a3a1.fb80f4",
+        "name": "------------USING DAVID'S ALGOLIA-------------",
+        "info": "",
+        "x": 1360,
+        "y": 100,
+        "wires": []
+    }
+]
