@@ -1,0 +1,828 @@
+[
+    {
+        "id": "55474cee.b3d894",
+        "type": "tab",
+        "label": "Alexa app",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "6791a40a.d8320c",
+        "type": "http response",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1410,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "e98e09c1.a4f24",
+        "type": "http in",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "url": "/medical",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 80,
+        "y": 160,
+        "wires": [
+            [
+                "48483ad8.03177c",
+                "add4f3d0.87f9d"
+            ]
+        ]
+    },
+    {
+        "id": "48483ad8.03177c",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 390,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "4a2ed999.db139",
+        "type": "switch",
+        "z": "55474cee.b3d894",
+        "name": "Alexa Request Switch",
+        "property": "payload.request.type",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "LaunchRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "IntentRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "SessionEndedRequest",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 4,
+        "x": 140,
+        "y": 380,
+        "wires": [
+            [
+                "1d139d04.026d3b"
+            ],
+            [
+                "6f753ecb.340c48"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "1d139d04.026d3b",
+        "type": "template",
+        "z": "55474cee.b3d894",
+        "name": "Launch Intent",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Welcome to Alexa's Medical Help Centre through Interplay. You can ask me questions like I have Fever.. or I have blurred vision.. or I feel dizzy.. etc... This flow is developed by Team Loud through Interplay!!",
+        "output": "str",
+        "x": 380,
+        "y": 240,
+        "wires": [
+            [
+                "a46d4501.140f",
+                "ad17ab13.e601f8"
+            ]
+        ]
+    },
+    {
+        "id": "a46d4501.140f",
+        "type": "template",
+        "z": "55474cee.b3d894",
+        "name": "Format Response",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n    \"version\": \"1.0\",\n    \"response\": {\n        \"outputSpeech\": {\n            \"type\": \"PlainText\",\n            \"text\": \"{{payload}}\"\n        },\n        \"ShouldEndSession\": false\n    }\n}",
+        "output": "str",
+        "x": 1050,
+        "y": 240,
+        "wires": [
+            [
+                "9547b331.f80cd"
+            ]
+        ]
+    },
+    {
+        "id": "9547b331.f80cd",
+        "type": "json",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1250,
+        "y": 240,
+        "wires": [
+            [
+                "6791a40a.d8320c"
+            ]
+        ]
+    },
+    {
+        "id": "6f753ecb.340c48",
+        "type": "switch",
+        "z": "55474cee.b3d894",
+        "name": "Intent Switch",
+        "property": "payload.request.intent.name",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "SearchIntent",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "AMAZON.FallbackIntent",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 370,
+        "y": 340,
+        "wires": [
+            [
+                "5ed5f1af.81876"
+            ],
+            [
+                "e85cbc26.a80208"
+            ]
+        ]
+    },
+    {
+        "id": "5345a6a5.557b08",
+        "type": "comment",
+        "z": "55474cee.b3d894",
+        "name": "--------------------------Ask your Alexa----------------------",
+        "info": "",
+        "x": 270,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "823d0538.3322f",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "vb FAQ_level0",
+        "func": "var require = context.global.get('require'); \n// msg.query=\"whats up with hooks?\";\nnode.warn(msg.query);\nvar request = require('request')\n\nfunction callback(error, response, body) {\n    msg.mainfaq_res = JSON.parse(body);\n    node.warn(\"printing message\");\n    // node.warn(\"Getting just the first one\");\n    node.warn(msg.mainfaq_res);\n    node.send(msg);\n}\nrequest({\n    method: 'GET',\n  url: 'https://jockeybrasupport.interplay.iterate.ai/vb_level0?query='+msg.query\n},callback);",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 840,
+        "y": 440,
+        "wires": [
+            [
+                "37d7eae2.f0d1fe",
+                "1d0d42b7.eb349d"
+            ]
+        ]
+    },
+    {
+        "id": "7d408fc1.f9697",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "Modify payload",
+        "func": "var require = context.global.get('require'); \nmsg.query = msg.payload.request.intent.slots.Query.value;\n\n// global.set('l0_nlp','level1_activated');\n// node.warn(\"Level 0 NLP ACTIVATED\");\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 580,
+        "y": 440,
+        "wires": [
+            [
+                "823d0538.3322f",
+                "4b3baae.db166d4"
+            ]
+        ]
+    },
+    {
+        "id": "ad17ab13.e601f8",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 590,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "37d7eae2.f0d1fe",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 830,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "4b3baae.db166d4",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 590,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "1d0d42b7.eb349d",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "Get First Answer",
+        "func": "var require = context.global.get('require'); \nmsg.ques=msg.mainfaq_res.response[0].question\n\nmsg.ans=msg.mainfaq_res.response[0].message\nmsg.ans = msg.ans.replace(/(\\r\\n|\\n|\\r)/gm, \"\");\n\nif (msg.ques===undefined)\n{\n    // msg.payload=msg.ans;\n    msg.count=1;\n}\nelse\n{\n//   msg.payload=msg.ques+\" \"+msg.ans;\n   msg.count=2;\n}\n\n\nnode.warn(msg);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1170,
+        "y": 440,
+        "wires": [
+            [
+                "113044db.5ca053",
+                "c5fa0a86.b1e888"
+            ]
+        ]
+    },
+    {
+        "id": "e85cbc26.a80208",
+        "type": "template",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "I am sorry, I dont get what you are saying, please try again!",
+        "output": "str",
+        "x": 660,
+        "y": 300,
+        "wires": [
+            [
+                "a46d4501.140f"
+            ]
+        ]
+    },
+    {
+        "id": "113044db.5ca053",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1250,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "c5fa0a86.b1e888",
+        "type": "switch",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "property": "count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1410,
+        "y": 500,
+        "wires": [
+            [
+                "be1604b2.83542"
+            ],
+            [
+                "bc24a50c.8c124"
+            ]
+        ]
+    },
+    {
+        "id": "be1604b2.83542",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "undefined answer",
+        "func": "var require = context.global.get('require'); \nmsg.payload=msg.ans;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1430,
+        "y": 440,
+        "wires": [
+            [
+                "a46d4501.140f"
+            ]
+        ]
+    },
+    {
+        "id": "bc24a50c.8c124",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "Initial answer",
+        "func": "var require = context.global.get('require');\n\nmsg.ques=msg.mainfaq_res.response[0].question\nnode.warn(\"Here\")\nnode.warn(msg.ques)\n// msg.ans=msg.mainfaq_res.response[0].message\n\nnode.warn(\"THIS IS INSIDE INITIAL ANSWER\");\n\n\nif((msg.ques===\"I have fever\")){\n        msg.payload=msg.ans;\n        msg.payload+=\" \";\n        msg.payload+=\"You can say things like...\";\n        msg.payload+=\"High Fever..\";\n        msg.payload+=\"Low Fever..\";\n        msg.payload+=\"Moderate Fever..\";\n        \n        global.set('l1_nlp','level1_activated');\n        node.warn(\"Level 1 NLP ACTIVATED\");\n        // msg.state=1;\n}\n\nelse if((msg.ques===\"I feel dizzy\")){\n    msg.payload=msg.ans;\n    msg.payload+=\" \";\n    msg.payload+=\"You can say things like...\";\n    msg.payload+=\"I feel thirsty ..\";\n    msg.payload+=\"I dont feel thirsty..\";\n    \n    global.set('l1_nlp','level1_activated');\n    node.warn(\"Level 1 NLP ACTIVATED\");\n}\n\nelse if((msg.ques===\"I feel nausious\")){\n    msg.payload=\"This is what I found for you...\";\n    msg.payload+=\" \";\n    msg.payload+=msg.ques+\" \"+msg.ans;\n}\nelse if((msg.ques===\"I have blured vision\")){\n    msg.payload=msg.ans;\n    msg.payload+=\" \";\n    msg.payload+=\"You can say things like...\";\n    msg.payload+=\"long term blurred vision ..\";\n    msg.payload+=\"short term blurred vision..\";\n    \n    global.set('l1_nlp','level1_activated');\n    node.warn(\"Level 1 NLP ACTIVATED\");\n}\n\nelse if((msg.ques===\"thank you for helping me out\")){\n    msg.payload=msg.ans;\n    global.set('l1_nlp',null);\n    global.set('l2_nlp',null);\n    node.warn(\"Everything is set to null!\")\n}\nelse{\n    msg.payload=\"This is what I found for you...\";\n    msg.payload+=\" \";\n    msg.payload+=msg.ques+\"...\"+msg.ans;\n}\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1690,
+        "y": 460,
+        "wires": [
+            [
+                "a46d4501.140f",
+                "4f9376e0.4cdb28"
+            ]
+        ]
+    },
+    {
+        "id": "4f9376e0.4cdb28",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1710,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "add4f3d0.87f9d",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "set global variables",
+        "func": "var require = context.global.get('require'); \n\n\nvar level1_nlp=global.get('l1_nlp');\n\nvar level2_nlp=global.get('l2_nlp');\n\n\nif (level1_nlp===undefined) {\n    global.set('l1_nlp',undefined);\n    level1_nlp=global.get('l1_nlp');\n}\n\n\nif (level2_nlp===undefined) {\n    global.set('l2_nlp',undefined);\n    level2_nlp=global.get('l1_nlp');\n}\n\n\nnode.warn(\"Level 1 NLP is \"+level1_nlp);\n\nnode.warn(\"Level 2 NLP is \"+level2_nlp);\n\nif (level1_nlp===\"level1_activated\"){\n    node.warn(\"Level 1 is activated\")\n    msg.newstate=1;\n}\n\n\nif (level2_nlp===\"level2_activated\"){\n    node.warn(\"Level 2 activated and 1 deactivated\")\n    msg.newstate=2;\n}\n\n\n\n\n\n\n\n\n\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 130,
+        "y": 240,
+        "wires": [
+            [
+                "4a2ed999.db139"
+            ]
+        ]
+    },
+    {
+        "id": "5ed5f1af.81876",
+        "type": "switch",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "property": "newstate",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 3,
+        "x": 170,
+        "y": 620,
+        "wires": [
+            [
+                "834a34b3.f06b7"
+            ],
+            [
+                "f32b8a40.8b492"
+            ],
+            [
+                "7d408fc1.f9697"
+            ]
+        ]
+    },
+    {
+        "id": "a67a3e31.5a7e38",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "resetting state values ",
+        "func": "var require = context.global.get('require'); \n\nglobal.set('l1_nlp',null);\nglobal.set('l2_nlp',null);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1220,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ed03d7c6.515e6",
+        "type": "inject",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 1000,
+        "y": 60,
+        "wires": [
+            [
+                "a67a3e31.5a7e38"
+            ]
+        ]
+    },
+    {
+        "id": "c3458dd3.c9645",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "vb FAQ_level1",
+        "func": "var require = context.global.get('require'); \n// msg.query=\"whats up with hooks?\";\nnode.warn(msg.query);\nvar request = require('request')\n\nfunction callback(error, response, body) {\n    msg.mainfaq_res = JSON.parse(body);\n    node.warn(\"printing message\");\n    // node.warn(\"Getting just the first one\");\n    node.warn(msg.mainfaq_res);\n    node.send(msg);\n}\nrequest({\n    method: 'GET',\n  url: 'https://jockeybrasupport.interplay.iterate.ai/vb_level1?query='+msg.query\n},callback);",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 840,
+        "y": 580,
+        "wires": [
+            [
+                "b664fa57.cbd738",
+                "bdf0ae25.d33ea"
+            ]
+        ]
+    },
+    {
+        "id": "834a34b3.f06b7",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "Modify payload",
+        "func": "var require = context.global.get('require'); \nmsg.query = msg.payload.request.intent.slots.Query.value;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 600,
+        "y": 580,
+        "wires": [
+            [
+                "c3458dd3.c9645",
+                "9ee3321a.e1a7d8"
+            ]
+        ]
+    },
+    {
+        "id": "b664fa57.cbd738",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 850,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "9ee3321a.e1a7d8",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 610,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "bdf0ae25.d33ea",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "Get First Answer",
+        "func": "var require = context.global.get('require'); \nmsg.ques=msg.mainfaq_res.response[0].question\n\nmsg.ans=msg.mainfaq_res.response[0].message\nmsg.ans = msg.ans.replace(/(\\r\\n|\\n|\\r)/gm, \"\");\n\nif (msg.ques===undefined)\n{\n    // msg.payload=msg.ans;\n    msg.count=3;\n}\nelse\n{\n//   msg.payload=msg.ques+\" \"+msg.ans;\n   msg.count=4;\n}\n\n\nnode.warn(msg);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 930,
+        "y": 720,
+        "wires": [
+            [
+                "9d92f537.9be448",
+                "522f7699.ae14c"
+            ]
+        ]
+    },
+    {
+        "id": "9d92f537.9be448",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1010,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "522f7699.ae14c",
+        "type": "switch",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "property": "count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "3",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "4",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1170,
+        "y": 780,
+        "wires": [
+            [
+                "d1e2311e.49421"
+            ],
+            [
+                "d6fdb007.f857a"
+            ]
+        ]
+    },
+    {
+        "id": "d1e2311e.49421",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "undefined answer",
+        "func": "var require = context.global.get('require'); \nmsg.payload=msg.ans;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1230,
+        "y": 700,
+        "wires": [
+            [
+                "a46d4501.140f"
+            ]
+        ]
+    },
+    {
+        "id": "d6fdb007.f857a",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "Initial answer",
+        "func": "var require = context.global.get('require');\n\n// msg.ques=msg.mainfaq_res.response[0].question\n\n// msg.ans=msg.mainfaq_res.response[0].message\n\nnode.warn(\"THIS IS INSIDE INITIAL ANSWER in level 1\");\n\n\nif((msg.ques===\"high fever\") || (msg.ques===\"low fever\") || (msg.ques===\"moderate fever\")){\n        msg.payload=msg.ans;\n        msg.payload+=\" \";\n        msg.payload+=\"You can say things like...\";\n        msg.payload+=\"I have a wound..\";\n        msg.payload+=\"No wound..\";\n        \n        \n        global.set('l2_nlp','level2_activated');\n        node.warn(\"Level 2 NLP ACTIVATED\");\n        global.set('l1_nlp',null);\n        node.warn(\"l1 NLP set to null again\");\n}\n\n\nelse if((msg.ques===\"I am not feeling thirsty\")){\n    msg.payload=msg.ans;\n    msg.payload+=\" \";\n    msg.payload+=\"You can say things like...\";\n    msg.payload+=\"I had food around 3 hours ago..\";\n    msg.payload+=\"I didnt have food \";\n  \n    global.set('l2_nlp','level2_activated');\n    node.warn(\"Level 2 NLP ACTIVATED\");\n    global.set('l1_nlp',null);\n    node.warn(\"l1 NLP set to null again\");\n\n}\n\nelse if((msg.ques===\"thank you for helping me out\")){\n    msg.payload+=msg.ans;\n    global.set('l1_nlp',null);\n    global.set('l2_nlp',null);\n    node.warn(\"Everything is set to null!\")\n}\n\nelse{\n    msg.payload=\"This is what I found for you...\";\n    msg.payload+=\"...\";\n    msg.payload+=msg.ques+\" \"+msg.ans;\n}\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1450,
+        "y": 740,
+        "wires": [
+            [
+                "1d5f3e47.d5c2b2",
+                "a46d4501.140f"
+            ]
+        ]
+    },
+    {
+        "id": "1d5f3e47.d5c2b2",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1470,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "ad146845.c58888",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "vb FAQ_level2",
+        "func": "var require = context.global.get('require'); \n// msg.query=\"whats up with hooks?\";\nnode.warn(msg.query);\nvar request = require('request')\n\nfunction callback(error, response, body) {\n    msg.mainfaq_res = JSON.parse(body);\n    node.warn(\"printing message\");\n    // node.warn(\"Getting just the first one\");\n    node.warn(msg.mainfaq_res);\n    node.send(msg);\n}\nrequest({\n    method: 'GET',\n  url: 'https://jockeybrasupport.interplay.iterate.ai/vb_level2?query='+msg.query\n},callback);",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 500,
+        "y": 1080,
+        "wires": [
+            [
+                "2afe304b.9f23f",
+                "f6cc89e3.f7b85"
+            ]
+        ]
+    },
+    {
+        "id": "f32b8a40.8b492",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "Modify payload",
+        "func": "var require = context.global.get('require'); \nmsg.query = msg.payload.request.intent.slots.Query.value;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 240,
+        "y": 1080,
+        "wires": [
+            [
+                "ad146845.c58888",
+                "caaf7da5.e737a8"
+            ]
+        ]
+    },
+    {
+        "id": "2afe304b.9f23f",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 490,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "caaf7da5.e737a8",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 250,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "f6cc89e3.f7b85",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "Get First Answer",
+        "func": "var require = context.global.get('require'); \nmsg.ques=msg.mainfaq_res.response[0].question\n\nmsg.ans=msg.mainfaq_res.response[0].message\nmsg.ans = msg.ans.replace(/(\\r\\n|\\n|\\r)/gm, \"\");\n\nif (msg.ques===undefined)\n{\n    // msg.payload=msg.ans;\n    msg.count=5;\n}\nelse\n{\n//   msg.payload=msg.ques+\" \"+msg.ans;\n   msg.count=6;\n}\n\n\nnode.warn(msg);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 830,
+        "y": 1080,
+        "wires": [
+            [
+                "f49564d4.e3a118",
+                "957d5f00.57894"
+            ]
+        ]
+    },
+    {
+        "id": "f49564d4.e3a118",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 910,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "957d5f00.57894",
+        "type": "switch",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "property": "count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "5",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "6",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1070,
+        "y": 1140,
+        "wires": [
+            [
+                "fc88f5c1.ee5948"
+            ],
+            [
+                "8486cd46.096678"
+            ]
+        ]
+    },
+    {
+        "id": "fc88f5c1.ee5948",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "undefined answer",
+        "func": "var require = context.global.get('require'); \nmsg.payload=msg.ans;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1130,
+        "y": 1060,
+        "wires": [
+            [
+                "a46d4501.140f"
+            ]
+        ]
+    },
+    {
+        "id": "8486cd46.096678",
+        "type": "function",
+        "z": "55474cee.b3d894",
+        "name": "Initial answer",
+        "func": "var require = context.global.get('require');\n\n// msg.payload=\"This is what I found for you...\";\n// msg.payload+=\" \";\n// msg.payload+=msg.ques+\" \"+msg.ans;\n\nnode.warn(\"THIS IS INSIDE INITIAL ANSWER in level 1\");\n\n\n\nif((msg.ques===\"thank you for helping me out\")){\n    msg.payload+=msg.ans;\n    global.set('l1_nlp',null);\n    global.set('l2_nlp',null);\n    node.warn(\"Everything is set to null!\")\n}\nelse{\n    msg.payload=\"This is what I found for you...\";\n    msg.payload+=\"...\";\n    msg.payload+=msg.ques+\" \"+msg.ans;\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1350,
+        "y": 1100,
+        "wires": [
+            [
+                "66640954.4ca7a8",
+                "a46d4501.140f"
+            ]
+        ]
+    },
+    {
+        "id": "66640954.4ca7a8",
+        "type": "console",
+        "z": "55474cee.b3d894",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1370,
+        "y": 1160,
+        "wires": []
+    }
+]
